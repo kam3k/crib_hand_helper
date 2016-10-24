@@ -1,44 +1,80 @@
+#include <tuple>
+
 #include "crib_hand_helper/hand_counter.h"
+
+using std::make_tuple;
+using std::get;
 
 namespace
 {
+  using SetsOfTwo = std::vector<std::tuple<int, int>>;
+  using SetsOfThree = std::vector<std::tuple<int, int, int>>;
+  using SetsOfFour = std::vector<std::tuple<int, int, int, int>>;
+  using SetsOfFive = std::vector<std::tuple<int, int, int, int, int>>;
+
+  const SetsOfTwo SETS_OF_TWO = {
+      make_tuple(0, 1), make_tuple(0, 2), make_tuple(0, 3), make_tuple(0, 4),
+      make_tuple(1, 2), make_tuple(1, 3), make_tuple(1, 4), make_tuple(2, 3),
+      make_tuple(2, 4), make_tuple(3, 4)};
+
+  const SetsOfThree SETS_OF_THREE = {make_tuple(0, 1, 2), make_tuple(0, 1, 3),
+                                     make_tuple(0, 1, 4), make_tuple(0, 2, 3),
+                                     make_tuple(0, 2, 4), make_tuple(0, 3, 4),
+                                     make_tuple(1, 2, 3), make_tuple(1, 2, 4),
+                                     make_tuple(1, 3, 4), make_tuple(2, 3, 4)};
+
+  const SetsOfFour SETS_OF_FOUR = {
+      make_tuple(0, 1, 2, 3), make_tuple(0, 1, 2, 4), make_tuple(0, 1, 3, 4),
+      make_tuple(0, 2, 3, 4), make_tuple(1, 2, 3, 4)};
+
+  const SetsOfFive SETS_OF_FIVE = {make_tuple(0, 1, 2, 3, 4)};
+
   unsigned count_fifteens(const Hand& hand, const Card& cut)
   {
     Hand h = hand;
     h.push_back(cut);
 
     unsigned score = 0;
-    for (Hand::size_type i = 0; i < h.size(); ++i)
+
+    for (const auto& indices : SETS_OF_TWO)
     {
-      for (Hand::size_type j = i + 1; j < h.size(); ++j)
+      if (h[get<0>(indices)].value + h[get<1>(indices)].value == 15)
       {
-        if (h[i].value + h[j].value == 15)
-        {
-          score += 2;
-        }
-        for (Hand::size_type k = j + 1; k < h.size(); ++k)
-        {
-          if (h[i].value + h[j].value + h[k].value ==
-              15)
-          {
-            score += 2;
-          }
-          for (Hand::size_type m = k + 1; m < h.size(); ++m)
-          {
-            if (h[i].value + h[j].value + h[k].value +
-                    h[m].value ==
-                15)
-            {
-              score += 2;
-            }
-          }
-        }
+        score += 2;
       }
     }
-    if (h[0].value + h[1].value + h[2].value + h[3].value + h[4].value == 15)
+
+    for (const auto& indices : SETS_OF_THREE)
     {
-      score += 2;
+      if (h[get<0>(indices)].value + h[get<1>(indices)].value +
+              h[get<2>(indices)].value ==
+          15)
+      {
+        score += 2;
+      }
     }
+
+    for (const auto& indices : SETS_OF_FOUR)
+    {
+      if (h[get<0>(indices)].value + h[get<1>(indices)].value +
+              h[get<2>(indices)].value + h[get<3>(indices)].value ==
+          15)
+      {
+        score += 2;
+      }
+    }
+
+    for (const auto& indices : SETS_OF_FIVE)
+    {
+      if (h[get<0>(indices)].value + h[get<1>(indices)].value +
+              h[get<2>(indices)].value + h[get<3>(indices)].value +
+              h[get<4>(indices)].value ==
+          15)
+      {
+        score += 2;
+      }
+    }
+
     return score;
   }
 
@@ -48,16 +84,14 @@ namespace
     h.push_back(cut);
 
     unsigned score = 0;
-    for (Hand::size_type i = 0; i < h.size(); ++i)
+    for (const auto& indices : SETS_OF_TWO)
     {
-      for (Hand::size_type j = i + 1; j < h.size(); ++j)
+      if (h[std::get<0>(indices)].rank == h[std::get<1>(indices)].rank)
       {
-        if (h[i].rank == h[j].rank)
-        {
-          score += 2;
-        }
+        score += 2;
       }
     }
+
     return score;
   }
 
@@ -69,7 +103,7 @@ namespace
   unsigned count_flush(const Hand& hand, const Card& cut)
   {
     const auto& suit = hand[0].suit;
-    for (decltype(hand.size()) i = 1; i < hand.size(); ++i)
+    for (Hand::size_type i = 1; i < hand.size(); ++i)
     {
       if (hand[i].suit != suit)
       {
