@@ -1,5 +1,3 @@
-#include <string>
-
 #include "crib_hand_helper/card.h"
 
 Card::Card(unsigned rank, char suit) : rank(rank), suit(suit)
