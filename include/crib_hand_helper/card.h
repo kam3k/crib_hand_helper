@@ -5,6 +5,9 @@
 
 struct Card
 {
+  Card() = delete;
+  Card(unsigned rank, char suit);
+  Card(char name, char suit);
   unsigned rank; // 1 (ace) to 13 (king)
   unsigned value; // 1-9 (A-9) and 10 (T-K)
   char name; // 'A', '2', ..., 'T', 'J', 'Q', 'K'
