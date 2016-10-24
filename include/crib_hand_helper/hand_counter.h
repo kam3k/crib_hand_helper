@@ -3,6 +3,6 @@
 
 #include "crib_hand_helper/card.h"
 
-unsigned count_hand(const Hand&);
+unsigned count_hand(const Hand&, const Card& cut);
 
 #endif /* HAND_COUNTER_H */

@@ -127,7 +127,7 @@ namespace
     Hand h = hand;
     h.push_back(cut);
     std::sort(h.begin(), h.end(), [](const Card& card_1, const Card& card_2) {
-      return card_1.rank > card_2.rank;
+      return card_1.rank < card_2.rank;
     });
 
     auto score = count_runs_of_five(h);

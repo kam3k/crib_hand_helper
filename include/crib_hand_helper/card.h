@@ -7,7 +7,6 @@
 struct Card
 {
   Card() = delete;
-  Card(unsigned rank, char suit);
   Card(char name, char suit);
   Card(const std::string& name_and_suit)
     : Card(name_and_suit[0], name_and_suit[1]){};
