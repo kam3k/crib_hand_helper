@@ -127,6 +127,29 @@ TEST_CASE("Runs")
 
 TEST_CASE("Fifteens")
 {
+  SECTION("Two card fifteens")
+  {
+    REQUIRE(count_hand({Card("2c"), Card("4d"), Card("7h"), Card("Js")}, Card("8c")) == 2);
+    REQUIRE(count_hand({Card("2c"), Card("Ad"), Card("6h"), Card("Js")}, Card("9c")) == 2);
+    REQUIRE(count_hand({Card("2c"), Card("4d"), Card("5h"), Card("Js")}, Card("7c")) == 2);
+  }
+
+  SECTION("Three card fifteens")
+  {
+    REQUIRE(count_hand({Card("2c"), Card("4d"), Card("9h"), Card("Js")}, Card("8c")) == 2);
+    REQUIRE(count_hand({Card("4c"), Card("Ad"), Card("7h"), Card("Js")}, Card("9c")) == 2);
+    REQUIRE(count_hand({Card("3c"), Card("4d"), Card("8h"), Card("Js")}, Card("6c")) == 2);
+  }
+
+  SECTION("Four card fifteen")
+  {
+    REQUIRE(count_hand({Card("Ac"), Card("2d"), Card("4h"), Card("8s")}, Card("6c")) == 4);
+  }
+
+  SECTION("Five card fifteen")
+  {
+    REQUIRE(count_hand({Card("Ac"), Card("2d"), Card("3h"), Card("4s")}, Card("5c")) == 7);
+  }
 }
 
 TEST_CASE("Miscellaneous hands")
