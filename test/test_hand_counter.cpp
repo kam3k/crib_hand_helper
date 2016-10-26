@@ -164,9 +164,20 @@ TEST_CASE("Miscellaneous hands")
 {
   SECTION("Like this one will ever happen")
   {
-    Hand hand = {Card("5c"), Card("5d"), Card("5h"), Card("Js")};
-    Card cut("5s");
-
-    REQUIRE(count_hand(hand, cut) == 29);
+    REQUIRE(count_hand({Card("5c"), Card("5d"), Card("5h"), Card("Js")},
+                       Card("5s")) == 29);
   }
+
+  REQUIRE(count_hand({Card("Ac"), Card("7d"), Card("7h"), Card("7s")},
+                     Card("Js")) == 12);
+  REQUIRE(count_hand({Card("4d"), Card("5d"), Card("6d"), Card("Jd")},
+                     Card("Td")) == 15);
+  REQUIRE(count_hand({Card("3d"), Card("3h"), Card("4d"), Card("5d")},
+                     Card("3s")) == 21);
+  REQUIRE(count_hand({Card("2c"), Card("6h"), Card("7s"), Card("2d")},
+                     Card("8s")) == 11);
+  REQUIRE(count_hand({Card("Jh"), Card("Ks"), Card("6s"), Card("4h")},
+                     Card("3h")) == 1);
+  REQUIRE(count_hand({Card("Ah"), Card("As"), Card("3s"), Card("7h")},
+                     Card("3h")) == 6);
 }
