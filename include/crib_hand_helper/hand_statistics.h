@@ -2,7 +2,7 @@
 
 struct HandStatistics
 {
-  HandStatistics() = delete;
+  HandStatistics() = default;
   HandStatistics(double mean, double std_dev, unsigned best, unsigned worst)
     : mean(mean), std_dev(std_dev), best(best), worst(worst)
   {

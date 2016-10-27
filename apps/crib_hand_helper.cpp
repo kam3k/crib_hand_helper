@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <map>
 #include <string>
 
 #include "crib_hand_helper/card.h"
@@ -109,6 +110,37 @@ int main()
     hand[i].suit = suit_string[i];
   }
 
-  std::vector<HandStatistics> all_hand_statistics;
+  std::vector<Hand> all_discards, all_keeps;
+  for (const auto& indices : SETS_OF_TWO)
+  {
+    Hand discard, keep;
+    for (Hand::size_type i = 0; i < hand.size(); ++i)
+    {
+      if (i == indices[0] || i == indices[1])
+      {
+        discard.push_back(hand[i]);
+      }
+      else
+      {
+        keep.push_back(hand[i]);
+      }
+    }
+    all_discards.push_back(discard);
+    all_keeps.push_back(keep);
+  }
 
+  std::map<Hand, HandStatistics> all_hand_statistics;
+  for (decltype(all_discards.size()) i = 0; i < all_discards.size(); ++i)
+  {
+    all_hand_statistics[all_discards[i]] = get_hand_statistics(all_keeps[i]);
+  }
+
+  for (auto it = all_hand_statistics.cbegin(); it != all_hand_statistics.cend();
+       ++it)
+  {
+    std::cout << it->first[0].name << it->first[0].suit << " "
+              << it->first[1].name << it->first[1].suit << it->second.mean
+              << " " << it->second.std_dev << " " << it->second.best << " "
+              << it->second.best;
+  }
 }
