@@ -5,8 +5,13 @@
 
 #include "crib_hand_helper/card.h"
 #include "crib_hand_helper/hand_counter.h"
+#include "crib_hand_helper/hand_statistics.h"
 
 const std::string CARD_NAMES = "A23456789TJQK";
+using IndexSets = std::vector<std::vector<Hand::size_type>>;
+const IndexSets SETS_OF_TWO = {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5},
+                               {1, 2}, {1, 3}, {1, 4}, {1, 5}, {2, 3},
+                               {2, 4}, {2, 5}, {3, 4}, {3, 5}, {4, 5}};
 
 bool validate_input(const std::string& hand_string)
 {
@@ -54,7 +59,7 @@ Hand parse_hand(const std::string& hand_string)
     {
       card = std::toupper(card);
     }
-    
+
     hand.emplace_back(card, suits[i]);
   }
 
@@ -78,7 +83,7 @@ int main()
   }
 
   auto hand = parse_hand(hand_string);
-  
+
   input_is_valid = false;
   char yes_or_no;
   while (!input_is_valid)
@@ -92,8 +97,18 @@ int main()
     }
   }
 
+  std::string suit_string;
   if (yes_or_no == 'y')
   {
-
+    std::cout << "Enter suits: ";
+    std::cin >> suit_string;
   }
+
+  for (std::string::size_type i = 0; i < suit_string.size(); ++i)
+  {
+    hand[i].suit = suit_string[i];
+  }
+
+  std::vector<HandStatistics> all_hand_statistics;
+
 }
