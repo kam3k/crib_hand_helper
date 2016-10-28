@@ -3,14 +3,22 @@
 struct HandStatistics
 {
   HandStatistics() = default;
-  HandStatistics(double mean, double std_dev, unsigned best, unsigned worst)
-    : mean(mean), std_dev(std_dev), best(best), worst(worst)
+  HandStatistics(const Hand& hand, const Hand& discard, double mean,
+                 double std_dev, unsigned best, unsigned worst)
+    : hand(hand)
+    , discard(discard)
+    , mean(mean)
+    , std_dev(std_dev)
+    , best(best)
+    , worst(worst)
   {
   }
+  Hand hand;
+  Hand discard;
   double mean;
   double std_dev;
   unsigned best;
   unsigned worst;
 };
 
-HandStatistics get_hand_statistics(const Hand& hand);
+HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard);

@@ -1,43 +1,30 @@
 #include <algorithm>
+#include <cassert>
 #include <vector>
 
+#include "crib_hand_helper/constants.h"
 #include "crib_hand_helper/hand_counter.h"
 
 namespace
 {
-  using IndexSets = std::vector<std::vector<Hand::size_type>>;
-  using AllSets = std::vector<IndexSets>;
-
-  const IndexSets SETS_OF_TWO = {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {1, 2},
-                                 {1, 3}, {1, 4}, {2, 3}, {2, 4}, {3, 4}};
-
-  const IndexSets SETS_OF_THREE = {{0, 1, 2}, {0, 1, 3}, {0, 1, 4}, {0, 2, 3},
-                                   {0, 2, 4}, {0, 3, 4}, {1, 2, 3}, {1, 2, 4},
-                                   {1, 3, 4}, {2, 3, 4}};
-
-  const IndexSets SETS_OF_FOUR = {
-      {0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {0, 2, 3, 4}, {1, 2, 3, 4}};
-
-  const IndexSets SETS_OF_FIVE = {{0, 1, 2, 3, 4}};
-
-  const AllSets ALL_SETS = {SETS_OF_TWO, SETS_OF_THREE, SETS_OF_FOUR, SETS_OF_FIVE};
-
   unsigned count_fifteens(const Hand& hand, const Card& cut)
   {
+    assert(hand.size() == 4);
+
     Hand h = hand;
     h.push_back(cut);
 
     unsigned score = 0;
     unsigned sum = 0;
-    
+
     for (const auto& sets : ALL_SETS)
     {
       for (const auto& indices : sets)
       {
-        sum = 0; 
+        sum = 0;
         for (const auto& index : indices)
         {
-          sum += h[index].value;  
+          sum += h[index].value;
         }
         if (sum == 15)
         {
@@ -51,11 +38,13 @@ namespace
 
   unsigned count_pairs(const Hand& hand, const Card& cut)
   {
+    assert(hand.size() == 4);
+
     Hand h = hand;
     h.push_back(cut);
 
     unsigned score = 0;
-    for (const auto& indices : SETS_OF_TWO)
+    for (const auto& indices : FIVE_CHOOSE_TWO_INDICES)
     {
       if (h[indices[0]].rank == h[indices[1]].rank)
       {
@@ -68,13 +57,15 @@ namespace
 
   unsigned count_runs_of_three(const Hand& hand)
   {
+    assert(hand.size() == 5);
+
     unsigned score = 0;
 
-    for (const auto& indices : SETS_OF_THREE)
+    for (const auto& indices : FIVE_CHOOSE_THREE_INDICES)
     {
       for (Hand::size_type i = 1; i < indices.size(); ++i)
       {
-        if (hand[indices[i]].rank != hand[indices[i-1]].rank + 1)
+        if (hand[indices[i]].rank != hand[indices[i - 1]].rank + 1)
         {
           break;
         }
@@ -90,13 +81,15 @@ namespace
 
   unsigned count_runs_of_four(const Hand& hand)
   {
+    assert(hand.size() == 5);
+
     unsigned score = 0;
 
-    for (const auto& indices : SETS_OF_FOUR)
+    for (const auto& indices : FIVE_CHOOSE_FOUR_INDICES)
     {
       for (Hand::size_type i = 1; i < indices.size(); ++i)
       {
-        if (hand[indices[i]].rank != hand[indices[i-1]].rank + 1)
+        if (hand[indices[i]].rank != hand[indices[i - 1]].rank + 1)
         {
           break;
         }
@@ -112,9 +105,11 @@ namespace
 
   unsigned count_runs_of_five(const Hand& hand)
   {
+    assert(hand.size() == 5);
+
     for (Hand::size_type i = 1; i < hand.size(); ++i)
     {
-      if (hand[i].rank != hand[i-1].rank + 1)
+      if (hand[i].rank != hand[i - 1].rank + 1)
       {
         return 0;
       }
@@ -124,6 +119,8 @@ namespace
 
   unsigned count_runs(const Hand& hand, const Card& cut)
   {
+    assert(hand.size() == 4);
+
     Hand h = hand;
     h.push_back(cut);
     std::sort(h.begin(), h.end(), [](const Card& card_1, const Card& card_2) {
@@ -140,12 +137,14 @@ namespace
         score += count_runs_of_three(h);
       }
     }
-    
+
     return score;
   }
 
   unsigned count_flush(const Hand& hand, const Card& cut)
   {
+    assert(hand.size() == 4);
+
     const auto& suit = hand[0].suit;
     for (Hand::size_type i = 1; i < hand.size(); ++i)
     {
@@ -159,6 +158,8 @@ namespace
 
   unsigned count_nobs(const Hand& hand, const Card& cut)
   {
+    assert(hand.size() == 4);
+
     for (const auto& card : hand)
     {
       if (card.name == 'J' && card.suit == cut.suit)
@@ -172,6 +173,8 @@ namespace
 
 unsigned count_hand(const Hand& hand, const Card& cut)
 {
+  assert(hand.size() == 4);
+
   return count_fifteens(hand, cut) + count_pairs(hand, cut) +
          count_runs(hand, cut) + count_flush(hand, cut) + count_nobs(hand, cut);
 }

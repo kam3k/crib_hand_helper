@@ -1,32 +1,36 @@
 #include <algorithm>
 #include <array>
+#include <cassert>
 
+#include "crib_hand_helper/constants.h"
 #include "crib_hand_helper/hand_counter.h"
 #include "crib_hand_helper/hand_statistics.h"
 
 using Deck = std::vector<Card>;
 
-const std::vector<char> NAMES = {'A', '2', '3', '4', '5', '6', '7',
-                                 '8', '9', 'T', 'J', 'Q', 'K'};
-const std::vector<char> SUITS = {'c', 'd', 'h', 's'};
-
-Deck build_deck(const Hand& hand)
+Deck build_deck(const Hand& hand, const Hand& discard)
 {
+  assert(hand.size() == 4);
+  assert(discard.size() == 2);
+
+  auto full_hand = hand;
+  full_hand.insert(full_hand.end(), discard.begin(), discard.end());
+
   Deck deck;
-  for (const auto& suit : SUITS)
+  for (const auto& suit : CARD_SUITS)
   {
-    for (const auto& name : NAMES)
+    for (const auto& name : CARD_NAMES)
     {
-      bool in_hand = false;
-      for (const auto& card : hand)
+      bool in_deck = true;
+      for (const auto& card : full_hand)
       {
         if (card.name == name && card.suit == suit)
         {
-          in_hand = true;
+          in_deck = false;
           break;
         }
       }
-      if (!in_hand)
+      if (in_deck)
       {
         deck.emplace_back(name, suit);
       }
@@ -35,9 +39,9 @@ Deck build_deck(const Hand& hand)
   return deck;
 }
 
-HandStatistics get_hand_statistics(const Hand& hand)
+HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard)
 {
-  const auto deck = build_deck(hand);
+  const auto deck = build_deck(hand, discard);
 
   std::vector<unsigned> counts;
   for (const auto& cut : deck)
@@ -56,5 +60,5 @@ HandStatistics get_hand_statistics(const Hand& hand)
   const auto best = std::max_element(counts.begin(), counts.end());
   const auto worst = std::min_element(counts.begin(), counts.end());
 
-  return HandStatistics(mean, std_dev, *best, *worst);
+  return HandStatistics(hand, discard, mean, std_dev, *best, *worst);
 }
