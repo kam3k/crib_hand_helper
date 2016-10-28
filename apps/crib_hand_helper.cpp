@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cctype>
+#include <iomanip>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 
 #include "crib_hand_helper/card.h"
@@ -9,12 +11,13 @@
 #include "crib_hand_helper/hand_statistics.h"
 
 const std::string CARD_NAMES = "A23456789TJQK";
+const std::string SUITS = "cdhs";
 using IndexSets = std::vector<std::vector<Hand::size_type>>;
 const IndexSets SETS_OF_TWO = {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5},
                                {1, 2}, {1, 3}, {1, 4}, {1, 5}, {2, 3},
                                {2, 4}, {2, 5}, {3, 4}, {3, 5}, {4, 5}};
 
-bool validate_input(const std::string& hand_string)
+bool validate_hand(const std::string& hand_string)
 {
   if (hand_string.size() != 6)
   {
@@ -67,49 +70,142 @@ Hand parse_hand(const std::string& hand_string)
   return hand;
 }
 
+bool validate_suits(const std::string& suits, const Hand& hand)
+{
+  // Check if suits are all c, d, h, or s
+  for (const auto& suit : suits)
+  {
+    if (std::find(SUITS.begin(), SUITS.end(), suit) == SUITS.end())
+    {
+      std::cout << "One or more suits are invalid.\n";
+      return false;
+    }
+  }
+
+  // Check if two cards with the same rank have the same suit
+
+  return true;
+}
+
+void adjust_suits(Hand& hand)
+{
+  std::string suit_string;
+  auto input_is_valid = false;
+  while (!input_is_valid)
+  {
+    std::cout << "Enter suits: ";
+    std::cin >> suit_string;
+    if (suit_string.size() != 6)
+    {
+      std::cout << "Enter exactly six suits.\n";
+      continue;
+    }
+    else if (!validate_suits(suit_string, hand))
+    {
+      continue;
+    }
+    input_is_valid = true;
+  }
+
+  // Adjust suits in hand
+  for (std::string::size_type i = 0; i < suit_string.size(); ++i)
+  {
+    hand[i].suit = suit_string[i];
+  }
+}
+
+void print_results(const std::vector<Hand>& discards,
+                   const std::vector<HandStatistics>& hand_statistics,
+                   const std::vector<int>& indices)
+{
+  std::cout << std::endl;
+  std::cout << std::right << std::setw(10) << "DISCARD" << std::right
+            << std::setw(14) << "AVERAGE" << std::right << std::setw(7)
+            << "HIGH" << std::setw(6) << std::right << "LOW" << std::endl;
+  std::cout << std::right << std::setw(10) << "-------" << std::right
+            << std::setw(14) << "-----------" << std::right << std::setw(7)
+            << "----" << std::setw(6) << std::right << "---" << std::endl;
+
+  std::vector<std::string> previous_outputs;
+  for (const auto& i : indices)
+  {
+    std::string discard = {discards[i][0].name, ' ', discards[i][1].name};
+    std::ostringstream output;
+    output << std::setw(10) << std::right << discard << std::setw(14)
+           << std::right << std::fixed << std::setprecision(2) << std::setw(8)
+           << std::right << hand_statistics[i].mean << " \u00b1 " << std::fixed
+           << std::setprecision(1) << std::setw(3) << std::right
+           << hand_statistics[i].std_dev << std::setw(7) << std::right
+           << hand_statistics[i].best << std::setw(6) << std::right
+           << hand_statistics[i].worst;
+
+    // Don't print repeats
+    if (std::find(previous_outputs.begin(), previous_outputs.end(), output.str()) == previous_outputs.end())
+    {
+      std::cout << output.str() << std::endl;
+      previous_outputs.push_back(output.str());
+    }
+  }
+  std::cout << std::endl;
+}
+
 int main()
 {
-  bool input_is_valid = false;
+  auto input_is_valid = false;
   std::string hand_string;
 
+  // Get hand
   while (!input_is_valid)
   {
     std::cout << "Enter hand: ";
     std::cin >> hand_string;
-    input_is_valid = validate_input(hand_string);
+    input_is_valid = validate_hand(hand_string);
     if (!input_is_valid)
     {
       std::cout << "Invalid hand. Try again.\n";
     }
   }
 
+  // Make hand string upper case
+  std::transform(hand_string.begin(), hand_string.end(), hand_string.begin(),
+                 ::toupper);
+
+  // Parse hand
   auto hand = parse_hand(hand_string);
 
-  input_is_valid = false;
-  char yes_or_no;
-  while (!input_is_valid)
+  // Check if there is a Jack (will need suits in this case)
+  bool need_suits = std::find(hand_string.begin(), hand_string.end(), 'J') !=
+                    hand_string.end();
+  if (need_suits)
   {
-    std::cout << "Are at least fours card the same suit? [y/n]: ";
-    std::cin >> yes_or_no;
-    input_is_valid = yes_or_no == 'y' || yes_or_no == 'n';
-    if (!input_is_valid)
+    std::cout << "You have a Jack in your hand. ";
+  }
+
+  // Check if there is a flush possibility (will need suits in this case);
+  if (!need_suits)
+  {
+    input_is_valid = false;
+    char response;
+    while (!input_is_valid)
     {
-      std::cout << "Invalid selection. Please enter y or n.\n";
+      std::cout << "Are at least fours card the same suit? [y/n]: ";
+      std::cin >> response;
+      input_is_valid = response == 'y' || response == 'n';
+      if (!input_is_valid)
+      {
+        std::cout << "Invalid selection. Please enter y or n.\n";
+      }
     }
+    need_suits = response == 'y';
   }
 
-  std::string suit_string;
-  if (yes_or_no == 'y')
+  // Adjust suits if necessary
+  if (need_suits)
   {
-    std::cout << "Enter suits: ";
-    std::cin >> suit_string;
+    adjust_suits(hand);
   }
 
-  for (std::string::size_type i = 0; i < suit_string.size(); ++i)
-  {
-    hand[i].suit = suit_string[i];
-  }
-
+  // Get two all possible discards and corresponding keeps
   std::vector<Hand> all_discards, all_keeps;
   for (const auto& indices : SETS_OF_TWO)
   {
@@ -129,18 +225,32 @@ int main()
     all_keeps.push_back(keep);
   }
 
-  std::map<Hand, HandStatistics> all_hand_statistics;
+  // Calculate hand statistics
+  std::vector<HandStatistics> all_hand_statistics;
   for (decltype(all_discards.size()) i = 0; i < all_discards.size(); ++i)
   {
-    all_hand_statistics[all_discards[i]] = get_hand_statistics(all_keeps[i]);
+    all_hand_statistics.push_back(get_hand_statistics(all_keeps[i]));
   }
 
-  for (auto it = all_hand_statistics.cbegin(); it != all_hand_statistics.cend();
-       ++it)
+  // Get rid of duplicates
+
+  // Sort from best average to worst average
+  struct CompareHandStatistics
   {
-    std::cout << it->first[0].name << it->first[0].suit << " "
-              << it->first[1].name << it->first[1].suit << it->second.mean
-              << " " << it->second.std_dev << " " << it->second.best << " "
-              << it->second.best;
-  }
+    CompareHandStatistics(std::vector<HandStatistics>& hand_statistics)
+      : hand_statistics(hand_statistics)
+    {
+    }
+    bool operator()(const int& a, const int& b) const
+    {
+      return hand_statistics[a].mean > hand_statistics[b].mean;
+    }
+    std::vector<HandStatistics>& hand_statistics;
+  };
+  std::vector<int> indices(all_hand_statistics.size());
+  std::iota(indices.begin(), indices.end(), 0);
+  std::sort(indices.begin(), indices.end(),
+            CompareHandStatistics(all_hand_statistics));
+
+  print_results(all_discards, all_hand_statistics, indices);
 }
