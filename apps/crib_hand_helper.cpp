@@ -5,6 +5,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <cassert>
 
 #include "crib_hand_helper/card.h"
 #include "crib_hand_helper/constants.h"
@@ -46,6 +47,8 @@ bool validate_hand(const std::string& hand_string)
 
 Hand parse_hand(const std::string& hand_string)
 {
+  assert(hand_string.size() == 6);
+
   const std::string suits = "cdhscd";
 
   Hand hand;
@@ -66,6 +69,9 @@ Hand parse_hand(const std::string& hand_string)
 
 bool validate_suits(const std::string& suits, const Hand& hand)
 {
+  assert(suits.size() == 6);
+  assert(hand.size() == 6);
+
   // Check if suits are all c, d, h, or s
   for (const auto& suit : suits)
   {
@@ -84,6 +90,8 @@ bool validate_suits(const std::string& suits, const Hand& hand)
 
 void adjust_suits(Hand& hand)
 {
+  assert(hand.size() == 6);
+
   std::string suit_string;
   auto input_is_valid = false;
   while (!input_is_valid)
@@ -112,6 +120,8 @@ void adjust_suits(Hand& hand)
 void print_results(const std::vector<HandStatistics>& hand_statistics,
                    bool need_suits)
 {
+  assert(hand_statistics.size() == 15);
+
   auto discard_space = need_suits ? 12 : 10;
   std::cout << std::endl;
   std::cout << std::right << std::setw(discard_space) << "DISCARD" << std::right

@@ -1,3 +1,6 @@
+#ifndef HAND_STATISTICS_H
+#define HAND_STATISTICS_H
+
 #include "crib_hand_helper/card.h"
 
 struct HandStatistics
@@ -22,3 +25,5 @@ struct HandStatistics
 };
 
 HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard);
+
+#endif /* HAND_STATISTICS_H */
