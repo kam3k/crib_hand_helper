@@ -41,6 +41,9 @@ Deck build_deck(const Hand& hand, const Hand& discard)
 
 HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard)
 {
+  assert(hand.size() == 4);
+  assert(discard.size() == 2);
+  
   const auto deck = build_deck(hand, discard);
 
   std::vector<unsigned> counts;
