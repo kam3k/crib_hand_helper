@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "crib_hand_helper/hand_counter.h"
 
+using namespace crib;
+
 TEST_CASE("Nobs")
 {
   SECTION("Without nobs")

@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "crib_hand_helper/card.h"
 
+using namespace crib;
+
 TEST_CASE("Rank and suit constructor")
 {
   SECTION("Mid-rank")

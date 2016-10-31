@@ -12,6 +12,8 @@
 #include "crib_hand_helper/hand_counter.h"
 #include "crib_hand_helper/hand_statistics.h"
 
+using namespace crib;
+
 bool validate_hand(const std::string& hand_string)
 {
   if (hand_string.size() != 6)

@@ -3,27 +3,30 @@
 
 #include "crib_hand_helper/card.h"
 
-struct HandStatistics
+namespace crib
 {
-  HandStatistics() = default;
-  HandStatistics(const Hand& hand, const Hand& discard, double mean,
-                 double std_dev, unsigned best, unsigned worst)
-    : hand(hand)
-    , discard(discard)
-    , mean(mean)
-    , std_dev(std_dev)
-    , best(best)
-    , worst(worst)
+  struct HandStatistics
   {
-  }
-  Hand hand;
-  Hand discard;
-  double mean;
-  double std_dev;
-  unsigned best;
-  unsigned worst;
-};
+    HandStatistics() = default;
+    HandStatistics(const Hand& hand, const Hand& discard, double mean,
+                   double std_dev, unsigned best, unsigned worst)
+      : hand(hand)
+      , discard(discard)
+      , mean(mean)
+      , std_dev(std_dev)
+      , best(best)
+      , worst(worst)
+    {
+    }
+    Hand hand;
+    Hand discard;
+    double mean;
+    double std_dev;
+    unsigned best;
+    unsigned worst;
+  };
 
-HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard);
+  HandStatistics get_hand_statistics(const Hand& hand, const Hand& discard);
+} /* crib */
 
 #endif /* HAND_STATISTICS_H */

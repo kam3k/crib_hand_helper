@@ -1,27 +1,30 @@
 #include "crib_hand_helper/card.h"
 
-Card::Card(char name, char suit) : name(name), suit(suit)
+namespace crib
 {
-  switch (name)
+  Card::Card(char name, char suit) : name(name), suit(suit)
   {
-    case 'A':
-      rank = 1;
-      break;
-    case 'T':
-      rank = 10;
-      break;
-    case 'J':
-      rank = 11;
-      break;
-    case 'Q':
-      rank = 12;
-      break;
-    case 'K':
-      rank = 13;
-      break;
-    default:
-      rank = name - '0';
-  }
+    switch (name)
+    {
+      case 'A':
+        rank = 1;
+        break;
+      case 'T':
+        rank = 10;
+        break;
+      case 'J':
+        rank = 11;
+        break;
+      case 'Q':
+        rank = 12;
+        break;
+      case 'K':
+        rank = 13;
+        break;
+      default:
+        rank = name - '0';
+    }
 
-  value = rank < 11 ? rank : 10;
-}
+    value = rank < 11 ? rank : 10;
+  }
+} /* crib */

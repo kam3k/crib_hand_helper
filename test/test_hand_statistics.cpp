@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "crib_hand_helper/hand_statistics.h"
 
+using namespace crib;
+
 TEST_CASE("Bad hands")
 {
   auto hand_statistics =

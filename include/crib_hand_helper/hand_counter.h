@@ -3,6 +3,9 @@
 
 #include "crib_hand_helper/card.h"
 
-unsigned count_hand(const Hand&, const Card& cut);
+namespace crib
+{
+  unsigned count_hand(const Hand&, const Card& cut);
+} /* crib */
 
 #endif /* HAND_COUNTER_H */
