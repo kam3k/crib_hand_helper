@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <numeric>
+#include <cmath>
 
 #include "crib_hand_helper/constants.h"
 #include "crib_hand_helper/hand_counter.h"
