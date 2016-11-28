@@ -1,11 +1,11 @@
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <string>
-#include <cassert>
 
 #include "crib_hand_helper/card.h"
 #include "crib_hand_helper/constants.h"
@@ -86,6 +86,20 @@ bool validate_suits(const std::string& suits, const Hand& hand)
   }
 
   // Check if two cards with the same rank have the same suit
+  std::map<unsigned, std::vector<char>> rank_suits_map;
+  auto suit_it = suits.cbegin();
+  auto card_it = hand.cbegin();
+  for (; suit_it != suits.cend() && card_it != hand.cend();
+       ++suit_it, ++card_it)
+  {
+    auto& suits = rank_suits_map[card_it->rank];
+    if (std::find(suits.begin(), suits.end(), *suit_it) != suits.end())
+    {
+      std::cout << "Two cards cannot have the same rank and suit.\n";
+      return false;
+    }
+    suits.push_back(*suit_it);
+  }
 
   return true;
 }
