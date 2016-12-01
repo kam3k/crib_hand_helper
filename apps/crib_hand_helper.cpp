@@ -226,6 +226,8 @@ int main()
         if (!input_is_valid)
         {
           std::cout << "Invalid selection. Please enter y or n.\n";
+          std::cin.clear();
+          std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
       }
       need_suits = response == 'y';
